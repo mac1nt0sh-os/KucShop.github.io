@@ -1,0 +1,61 @@
+/* Базовые переменные */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --primary-color: #e31937;
+    --button-gradient: linear-gradient(135deg, #e31937 0%, #a0122a 100%);
+}
+
+[data-theme="dark"] {
+    --bg-color: #121212;
+    --text-color: #f5f5f5;
+    --primary-color: #ff4754;
+}
+
+/* Общие стили */
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Стили карточек */
+.uc-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.uc-card {
+    background: var(--button-gradient);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Анимации */
+.uc-card:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.uc-card:active {
+    transform: scale(0.98);
+}
+
+/* Адаптивность */
+@media (max-width: 500px) {
+    .uc-grid {
+        grid-template-columns: 1fr;
+    }
+}
