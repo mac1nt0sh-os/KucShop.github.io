@@ -1,27 +1,249 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>UC Shop</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dead by Daylight UC Purchase</title>
     <style>
-        body { font-family: Arial; padding: 20px; }
-        button { padding: 10px 20px; background: #0088cc; color: white; border: none; }
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f5f5f5;
+            --primary-color: #e31937;
+            --secondary-color: #6c757d;
+            --border-color: #dddddd;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --primary-color: #ff4754;
+            --secondary-color: #adb5bd;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .uc-option {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .uc-amount {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .uc-price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .bonus-badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .payment-methods {
+            margin-top: 30px;
+        }
+
+        .payment-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .payment-option {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .payment-method {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .payment-name {
+            font-weight: bold;
+        }
+
+        .payment-price {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .uc-option {
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать в UC Shop!</h1>
-    <button onclick="sendData()">Отправить тестовые данные</button>
-
+    <div class="container">
+        <h1>Dead by Daylight</h1>
+        
+        <div class="uc-option">
+            <span class="uc-amount">60 UC</span>
+            <span class="uc-price">81-82 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">325 UC</span>
+            <span class="uc-price">414-422 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">660 UC</span>
+            <span class="uc-price">827-943 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">985 UC</span>
+            <span class="uc-price">1281-1307 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">325 UC <span class="bonus-badge">Повышенный кэшбек</span></span>
+            <span class="uc-price">1320 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">1320 UC</span>
+            <span class="uc-price">1605-1637 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">2000 UC</span>
+            <span class="uc-price">2001-2133 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">2460 UC</span>
+            <span class="uc-price">2938-2997 ₽</span>
+        </div>
+        
+        <div class="uc-option">
+            <span class="uc-amount">3850 UC</span>
+            <span class="uc-price">4134-4218 ₽</span>
+        </div>
+        
+        <div class="payment-methods">
+            <div class="payment-title">Способ оплаты</div>
+            
+            <div class="payment-option">
+                <div class="payment-method">
+                    <span class="payment-name">Купикомначи: 414 ₽</span>
+                    <span class="payment-price">Картой 422 ₽</span>
+                </div>
+            </div>
+            
+            <div class="payment-option">
+                <div class="payment-method">
+                    <span class="payment-name">Купикомначи СЕП Картой</span>
+                    <span class="payment-price">422 ₽</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+    
     <script>
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-
-        function sendData() {
-            Telegram.WebApp.sendData(JSON.stringify({
-                action: "test",
-                items: ["Burger", "Fries"]
-            }));
-            Telegram.WebApp.close();
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Check for saved theme preference or use system preference
+        const currentTheme = localStorage.getItem('theme') || 
+                             (prefersDarkScheme.matches ? 'dark' : 'light');
+        
+        if (currentTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            let theme = 'light';
+            if (document.body.getAttribute('data-theme') !== 'dark') {
+                theme = 'dark';
+            }
+            
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        });
+        
+        // Telegram WebApp theme detection
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tgTheme = window.Telegram.WebApp.colorScheme;
+            if (tgTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.body.setAttribute('data-theme', 'light');
+            }
+            
+            // Listen for theme changes in Telegram
+            window.Telegram.WebApp.onEvent('themeChanged', function() {
+                const newTheme = window.Telegram.WebApp.colorScheme;
+                document.body.setAttribute('data-theme', newTheme === 'dark' ? 'dark' : 'light');
+            });
         }
     </script>
 </body>
