@@ -3,32 +3,653 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Покупка UC в Dead by Daylight</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Покупка UC</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --card-bg: #f5f5f5;
+            --primary-color: #e31937;
+            --secondary-color: #6c757d;
+            --border-color: #dddddd;
+            --button-gradient: linear-gradient(135deg, #e31937 0%, #a0122a 100%);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #f5f5f5;
+            --card-bg: #1e1e1e;
+            --primary-color: #ff4754;
+            --secondary-color: #adb5bd;
+            --border-color: #333333;
+            --button-gradient: linear-gradient(135deg, #ff4754 0%, #c5303a 100%);
+            --success-color: #3ddc84;
+            --warning-color: #ffbb33;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .uc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .uc-card {
+            background: var(--button-gradient);
+            color: white;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: scale(1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .uc-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .uc-card:active {
+            transform: scale(0.98);
+            transition: transform 0.1s ease;
+        }
+
+        .uc-image {
+            height: 100px;
+            width: auto;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .uc-card:hover .uc-image {
+            transform: scale(1.05);
+        }
+
+        .uc-amount {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .uc-card:hover .uc-amount {
+            transform: translateY(-2px);
+        }
+
+        .uc-price {
+            font-size: 16px;
+            opacity: 0.9;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .uc-card:hover .uc-price {
+            background: rgba(0,0,0,0.3);
+            transform: translateY(2px);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1.05); }
+        }
+
+        .uc-card.clicked {
+            animation: pulse 0.4s ease;
+        }
+
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .payment-content {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .payment-modal.active .payment-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .payment-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .payment-method {
+            background-color: var(--bg-color);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-method:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .payment-method-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .close-btn {
+            margin-top: 15px;
+            text-align: center;
+            color: var(--secondary-color);
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* Стили для формы оплаты */
+        .payment-form {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .payment-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .pay-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            margin-top: 10px;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            color: var(--success-color);
+            font-weight: bold;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .processing-message {
+            display: none;
+            text-align: center;
+            color: var(--warning-color);
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--warning-color);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 400px) {
+            .uc-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .uc-card {
+                padding: 15px 10px;
+            }
+            
+            .uc-image {
+                height: 80px;
+            }
+            
+            .uc-amount {
+                font-size: 18px;
+            }
+            
+            .uc-price {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Dead by Daylight</h1>
+        <h1>Khronos by ucShop</h1>
         
         <div class="uc-grid">
-            <button class="uc-card" data-uc="57" data-price="80">
-                <img src="images/57uc.png" class="uc-image" alt="57 UC">
+            <button class="uc-card" onclick="showPaymentModal('57 UC', '80 ₽')">
+                <img src="img/60.png" class="uc-image" alt="57 UC">
                 <div class="uc-amount">57 UC</div>
                 <div class="uc-price">80 ₽</div>
             </button>
             
-            <!-- Остальные карточки аналогично -->
+            <button class="uc-card" onclick="showPaymentModal('325 UC', '415 ₽')">
+                <img src="img/325.png" class="uc-image" alt="300 UC">
+                <div class="uc-amount">325 UC</div>
+                <div class="uc-price">415 ₽</div>
+            </button>
+            
+            <button class="uc-card" onclick="showPaymentModal('660 UC', '815 ₽')">
+                <img src="img/660.png" class="uc-image" alt="600 UC">
+                <div class="uc-amount">660 UC</div>
+                <div class="uc-price">815 ₽</div>
+            </button>
+            
+            <button class="uc-card" onclick="showPaymentModal('1800 UC', '2000 ₽')">
+                <img src="img/1800.png" class="uc-image" alt="985 UC">
+                <div class="uc-amount">1800 UC</div>
+                <div class="uc-price">2000 ₽</div>
+            </button>
         </div>
     </div>
     
+    <!-- Модальное окно оплаты -->
     <div id="paymentModal" class="payment-modal">
         <div class="payment-content">
-            <!-- Содержимое модального окна -->
+            <div class="payment-title">Выберите способ оплаты</div>
+            <div id="paymentDetails" style="margin-bottom: 20px; text-align: center; font-size: 16px;"></div>
+            
+            <div class="payment-method" onclick="showPaymentForm('sbp')">
+                <span class="payment-method-icon">🏦</span>
+                Система Быстрых Платежей (СБП)
+            </div>
+            <div class="payment-method" onclick="showPaymentForm('card')">
+                <span class="payment-method-icon">💳</span>
+                Оплата картой
+            </div>
+            
+            <!-- Форма для СБП -->
+            <div id="sbpForm" class="payment-form">
+                <div class="form-group">
+                    <label for="sbpPhone">Номер телефона:</label>
+                    <input type="tel" id="sbpPhone" placeholder="+7 (XXX) XXX-XX-XX" pattern="\+7\s?[0-9]{3}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}" required>
+                </div>
+                <button class="pay-btn" onclick="processSBPPayment()">Оплатить через СБП</button>
+                <button class="pay-btn back-btn" onclick="backToPaymentMethods()">Назад</button>
+            </div>
+            
+            <!-- Форма для оплаты картой -->
+            <div id="cardForm" class="payment-form">
+                <div class="form-group">
+                    <label for="cardNumber">Номер карты:</label>
+                    <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX" pattern="[0-9]{16}" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardExpiry">Срок действия:</label>
+                    <input type="text" id="cardExpiry" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardCvv">CVV код:</label>
+                    <input type="text" id="cardCvv" placeholder="XXX" pattern="[0-9]{3}" required>
+                </div>
+                <button class="pay-btn" onclick="processCardPayment()">Оплатить картой</button>
+                <button class="pay-btn back-btn" onclick="backToPaymentMethods()">Назад</button>
+            </div>
+            
+            <!-- Сообщение о процессе оплаты -->
+            <div id="processingPayment" class="processing-message">
+                <div class="spinner"></div>
+                <p>Обработка платежа...</p>
+            </div>
+            
+            <!-- Сообщение об успешной оплате -->
+            <div id="successMessage" class="success-message">
+                <p>✅ Оплата прошла успешно!</p>
+                <p>UC будут зачислены в течение 5 минут.</p>
+            </div>
+            
+            <div class="close-btn" onclick="closePaymentModal()">Отмена</div>
         </div>
     </div>
     
     <button class="theme-toggle" id="themeToggle">🌓</button>
     
-    <script src="js/script.js"></script>
+    <script>
+        // Текущий выбранный пакет UC
+        let currentUCPackage = '';
+        let currentPrice = '';
+        
+        // Показать модальное окно оплаты
+        function showPaymentModal(uc, price) {
+            currentUCPackage = uc;
+            currentPrice = price;
+            
+            document.getElementById('paymentDetails').innerHTML = `
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">${uc}</div>
+                <div style="color: var(--primary-color); font-size: 20px; font-weight: bold;">${price}</div>
+            `;
+            
+            // Сбросить все формы и сообщения
+            document.querySelectorAll('.payment-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById('processingPayment').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            const modal = document.getElementById('paymentModal');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+            
+            // Анимация клика на карточке
+            event.currentTarget.classList.add('clicked');
+            setTimeout(() => {
+                event.currentTarget.classList.remove('clicked');
+            }, 400);
+        }
+        
+        // Закрыть модальное окно
+        function closePaymentModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        
+        // Показать форму оплаты
+        function showPaymentForm(paymentType) {
+            // Скрыть все методы оплаты
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.style.display = 'none';
+            });
+            
+            // Показать нужную форму
+            if (paymentType === 'sbp') {
+                document.getElementById('sbpForm').classList.add('active');
+            } else if (paymentType === 'card') {
+                document.getElementById('cardForm').classList.add('active');
+            }
+        }
+        
+        // Вернуться к выбору способа оплаты
+        function backToPaymentMethods() {
+            // Скрыть все формы
+            document.querySelectorAll('.payment-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Показать методы оплаты
+            document.querySelectorAll('.payment-method').forEach(method => {
+                method.style.display = 'flex';
+            });
+        }
+        
+        // Обработка платежа через СБП
+        function processSBPPayment() {
+            const phone = document.getElementById('sbpPhone').value;
+            
+            // Простая валидация
+            if (!phone.match(/\+7\s?[0-9]{3}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}/)) {
+                alert('Пожалуйста, введите корректный номер телефона');
+                return;
+            }
+            
+            // Скрыть форму
+            document.getElementById('sbpForm').classList.remove('active');
+            
+            // Показать индикатор загрузки
+            document.getElementById('processingPayment').style.display = 'block';
+            
+            // Имитация обработки платежа
+            setTimeout(() => {
+                document.getElementById('processingPayment').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Здесь можно добавить реальную интеграцию с платежной системой
+                console.log(`Оплата через СБП: ${currentUCPackage} за ${currentPrice}`);
+                console.log(`Телефон: ${phone}`);
+                
+                // Закрыть модальное окно через 3 секунды
+                setTimeout(closePaymentModal, 3000);
+            }, 2000);
+        }
+        
+        // Обработка платежа картой
+        function processCardPayment() {
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardExpiry = document.getElementById('cardExpiry').value;
+            const cardCvv = document.getElementById('cardCvv').value;
+            
+            // Простая валидация
+            if (!cardNumber.match(/[0-9]{16}/)) {
+                alert('Пожалуйста, введите корректный номер карты (16 цифр)');
+                return;
+            }
+            
+            if (!cardExpiry.match(/(0[1-9]|1[0-2])\/[0-9]{2}/)) {
+                alert('Пожалуйста, введите корректный срок действия карты (MM/YY)');
+                return;
+            }
+            
+            if (!cardCvv.match(/[0-9]{3}/)) {
+                alert('Пожалуйста, введите корректный CVV код (3 цифры)');
+                return;
+            }
+            
+            // Скрыть форму
+            document.getElementById('cardForm').classList.remove('active');
+            
+            // Показать индикатор загрузки
+            document.getElementById('processingPayment').style.display = 'block';
+            
+            // Имитация обработки платежа
+            setTimeout(() => {
+                document.getElementById('processingPayment').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Здесь можно добавить реальную интеграцию с платежной системой
+                console.log(`Оплата картой: ${currentUCPackage} за ${currentPrice}`);
+                console.log(`Карта: ${cardNumber.replace(/(\d{4})/g, '$1 ').trim()}`);
+                console.log(`Срок: ${cardExpiry}, CVV: ${cardCvv}`);
+                
+                // Закрыть модальное окно через 3 секунды
+                setTimeout(closePaymentModal, 3000);
+            }, 2000);
+        }
+        
+        // Переключение темы
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        const currentTheme = localStorage.getItem('theme') || 
+                             (prefersDarkScheme.matches ? 'dark' : 'light');
+        
+        if (currentTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            let theme = 'light';
+            if (document.body.getAttribute('data-theme') !== 'dark') {
+                theme = 'dark';
+            }
+            
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        });
+        
+        // Интеграция с Telegram WebApp
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tgTheme = window.Telegram.WebApp.colorScheme;
+            document.body.setAttribute('data-theme', tgTheme === 'dark' ? 'dark' : 'light');
+            
+            window.Telegram.WebApp.onEvent('themeChanged', function() {
+                const newTheme = window.Telegram.WebApp.colorScheme;
+                document.body.setAttribute('data-theme', newTheme === 'dark' ? 'dark' : 'light');
+            });
+        }
+
+        // Добавляем анимацию при клике на все карточки
+        document.querySelectorAll('.uc-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.add('clicked');
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                }, 400);
+            });
+        });
+        
+        // Маска для номера телефона
+        document.getElementById('sbpPhone').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            e.target.value = !x[2] ? '+7' + x[1] : '+7 (' + x[2] + ') ' + x[3] + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+        
+        // Маска для номера карты
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ');
+        });
+        
+        // Маска для срока действия карты
+        document.getElementById('cardExpiry').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').replace(/(\d{2})(?=\d)/g, '$1/');
+        });
+    </script>
 </body>
 </html>
