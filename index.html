@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dead by Daylight UC Purchase</title>
+    <title>Покупка UC в Dead by Daylight</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -12,6 +12,7 @@
             --primary-color: #e31937;
             --secondary-color: #6c757d;
             --border-color: #dddddd;
+            --button-gradient: linear-gradient(135deg, #e31937 0%, #a0122a 100%);
         }
 
         [data-theme="dark"] {
@@ -21,6 +22,7 @@
             --primary-color: #ff4754;
             --secondary-color: #adb5bd;
             --border-color: #333333;
+            --button-gradient: linear-gradient(135deg, #ff4754 0%, #c5303a 100%);
         }
 
         body {
@@ -45,74 +47,110 @@
             font-size: 24px;
         }
 
-        .uc-option {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
+        .uc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .uc-card {
+            background: var(--button-gradient);
+            color: white;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            border: 1px solid var(--border-color);
+        }
+
+        .uc-image {
+            height: 100px;
+            width: auto;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            object-fit: contain;
         }
 
         .uc-amount {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
+            margin-bottom: 5px;
         }
 
         .uc-price {
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
+            opacity: 0.9;
+            background: rgba(0,0,0,0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
         }
 
-        .bonus-badge {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 5px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
-        .payment-methods {
-            margin-top: 30px;
-        }
-
-        .payment-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .payment-option {
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-        }
-
-        .payment-method {
-            display: flex;
-            justify-content: space-between;
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
             align-items: center;
         }
 
-        .payment-name {
-            font-weight: bold;
+        .payment-content {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        .payment-price {
+        .payment-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
             color: var(--primary-color);
+        }
+
+        .payment-method {
+            background-color: var(--bg-color);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
             font-weight: bold;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .payment-method:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .close-btn {
+            margin-top: 15px;
+            text-align: center;
+            color: var(--secondary-color);
+            cursor: pointer;
+            font-size: 14px;
         }
 
         .theme-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: var(--primary-color);
+            background: var(--button-gradient);
             color: white;
             border: none;
             border-radius: 50%;
@@ -123,16 +161,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 100;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
+        @media (max-width: 400px) {
+            .uc-grid {
+                grid-template-columns: 1fr;
             }
             
-            .uc-option {
-                padding: 12px;
+            .uc-card {
+                padding: 15px 10px;
+            }
+            
+            .uc-image {
+                height: 80px;
+            }
+            
+            .uc-amount {
+                font-size: 18px;
+            }
+            
+            .uc-price {
+                font-size: 14px;
             }
         }
     </style>
@@ -141,80 +192,79 @@
     <div class="container">
         <h1>Dead by Daylight</h1>
         
-        <div class="uc-option">
-            <span class="uc-amount">60 UC</span>
-            <span class="uc-price">81-82 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">325 UC</span>
-            <span class="uc-price">414-422 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">660 UC</span>
-            <span class="uc-price">827-943 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">985 UC</span>
-            <span class="uc-price">1281-1307 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">325 UC <span class="bonus-badge">Повышенный кэшбек</span></span>
-            <span class="uc-price">1320 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">1320 UC</span>
-            <span class="uc-price">1605-1637 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">2000 UC</span>
-            <span class="uc-price">2001-2133 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">2460 UC</span>
-            <span class="uc-price">2938-2997 ₽</span>
-        </div>
-        
-        <div class="uc-option">
-            <span class="uc-amount">3850 UC</span>
-            <span class="uc-price">4134-4218 ₽</span>
-        </div>
-        
-        <div class="payment-methods">
-            <div class="payment-title">Способ оплаты</div>
+        <div class="uc-grid">
+            <button class="uc-card" onclick="showPaymentModal('57 UC', '80 ₽')">
+                <img src="https://via.placeholder.com/150x60/ffffff/333333?text=57UC" class="uc-image" alt="57 UC">
+                <div class="uc-amount">57 UC</div>
+                <div class="uc-price">80 ₽</div>
+            </button>
             
-            <div class="payment-option">
-                <div class="payment-method">
-                    <span class="payment-name">Купикомначи: 414 ₽</span>
-                    <span class="payment-price">Картой 422 ₽</span>
-                </div>
-            </div>
+            <button class="uc-card" onclick="showPaymentModal('300 UC', '350 ₽')">
+                <img src="https://via.placeholder.com/150x60/ffffff/333333?text=300UC" class="uc-image" alt="300 UC">
+                <div class="uc-amount">300 UC</div>
+                <div class="uc-price">350 ₽</div>
+            </button>
             
-            <div class="payment-option">
-                <div class="payment-method">
-                    <span class="payment-name">Купикомначи СЕП Картой</span>
-                    <span class="payment-price">422 ₽</span>
-                </div>
-            </div>
+            <button class="uc-card" onclick="showPaymentModal('600 UC', '650 ₽')">
+                <img src="https://via.placeholder.com/150x60/ffffff/333333?text=600UC" class="uc-image" alt="600 UC">
+                <div class="uc-amount">600 UC</div>
+                <div class="uc-price">650 ₽</div>
+            </button>
+            
+            <button class="uc-card" onclick="showPaymentModal('985 UC', '1000 ₽')">
+                <img src="https://via.placeholder.com/150x60/ffffff/333333?text=985UC" class="uc-image" alt="985 UC">
+                <div class="uc-amount">985 UC</div>
+                <div class="uc-price">1000 ₽</div>
+            </button>
         </div>
     </div>
-    
+
+    <div id="paymentModal" class="payment-modal">
+        <div class="payment-content">
+            <div class="payment-title">Выберите способ оплаты</div>
+            <div id="paymentDetails" style="margin-bottom: 20px; text-align: center; font-size: 16px;"></div>
+            
+            <div class="payment-method" onclick="processPayment('СПБ')">
+                Купикомначи (СПБ)
+            </div>
+            <div class="payment-method" onclick="processPayment('Карта')">
+                Оплата картой
+            </div>
+            
+            <div class="close-btn" onclick="closePaymentModal()">Отмена</div>
+        </div>
+    </div>
+
     <button class="theme-toggle" id="themeToggle">🌓</button>
-    
+
     <script>
-        // Theme toggle functionality
+        let currentUCPackage = '';
+        let currentPrice = '';
+        
+        function showPaymentModal(uc, price) {
+            currentUCPackage = uc;
+            currentPrice = price;
+            
+            document.getElementById('paymentDetails').innerHTML = `
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">${uc}</div>
+                <div style="color: var(--primary-color); font-size: 20px; font-weight: bold;">${price}</div>
+            `;
+            
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+        
+        function processPayment(method) {
+            alert(`Вы выбрали: ${currentUCPackage} за ${currentPrice}\nСпособ оплаты: ${method}`);
+            closePaymentModal();
+        }
+
         const themeToggle = document.getElementById('themeToggle');
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-        
-        // Check for saved theme preference or use system preference
-        const currentTheme = localStorage.getItem('theme') || 
-                             (prefersDarkScheme.matches ? 'dark' : 'light');
+        const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
         
         if (currentTheme === 'dark') {
             document.body.setAttribute('data-theme', 'dark');
@@ -225,21 +275,14 @@
             if (document.body.getAttribute('data-theme') !== 'dark') {
                 theme = 'dark';
             }
-            
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
         });
-        
-        // Telegram WebApp theme detection
+
         if (window.Telegram && window.Telegram.WebApp) {
             const tgTheme = window.Telegram.WebApp.colorScheme;
-            if (tgTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-            } else {
-                document.body.setAttribute('data-theme', 'light');
-            }
+            document.body.setAttribute('data-theme', tgTheme === 'dark' ? 'dark' : 'light');
             
-            // Listen for theme changes in Telegram
             window.Telegram.WebApp.onEvent('themeChanged', function() {
                 const newTheme = window.Telegram.WebApp.colorScheme;
                 document.body.setAttribute('data-theme', newTheme === 'dark' ? 'dark' : 'light');
